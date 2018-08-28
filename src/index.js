@@ -1,12 +1,16 @@
 /* eslint-disable max-len,camelcase,no-undef */
 export default class SmarttagPlugin {
+  loaded = false;
+
   /**
    * @param xtsite
+   * @param options
    */
-  constructor(xtsite) {
+  constructor(xtsite, options) {
     if (xtsite !== undefined) {
       this.getScript(`//tag.aticdn.net/${xtsite}/smarttag.js`, () => {
-        this.tag = this.newTag();
+        this.tag = this.newTag(options);
+        this.loaded = true;
         console.log(this.tag);
       });
     }
@@ -32,8 +36,13 @@ export default class SmarttagPlugin {
    * @param info: {name: string, level2?: string, chapter1?: string, chapter2?: string, chapter3?: string, customObject?: any}
    */
   sendPage(info) {
-    this.tag.page.set(info);
-    this.tag.dispatch();
+    let time = setInterval(() => {
+      if (this.loaded) {
+        this.tag.page.set(info);
+        this.tag.dispatch();
+        clearInterval(time);
+      }
+    }, 100);
   }
 
   /**
@@ -62,7 +71,7 @@ export default class SmarttagPlugin {
     s = d.createElement('script');
     s.language = 'javascript';
     s.type = 'text/javascript';
-    // s.async = false;
+    s.async = 1;
     s.charset = 'utf-8';
     s.src = src;
     if (typeof o.callback === 'function') {
