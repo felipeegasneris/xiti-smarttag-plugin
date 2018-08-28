@@ -62,7 +62,7 @@ export default class SmarttagPlugin {
     s = d.createElement('script');
     s.language = 'javascript';
     s.type = 'text/javascript';
-    s.async = 1;
+    // s.async = false;
     s.charset = 'utf-8';
     s.src = src;
     if (typeof o.callback === 'function') {
@@ -80,7 +80,6 @@ export default class SmarttagPlugin {
         };
       }
     }
-    // t = d.getElementsByTagName('script')[0];
     d.getElementsByTagName('head')[0].appendChild(s);
   }
 }
