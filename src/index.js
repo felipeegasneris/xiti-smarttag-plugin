@@ -1,7 +1,7 @@
 /* eslint-disable max-len,camelcase,no-undef */
 export default class SmarttagPlugin {
   loaded = false;
-
+  fail = false;
   /**
    * @param xtsite
    * @param options
@@ -9,9 +9,13 @@ export default class SmarttagPlugin {
   constructor(xtsite, options) {
     if (xtsite !== undefined) {
       this.getScript(`//tag.aticdn.net/${xtsite}/smarttag.js`, () => {
-        this.tag = this.newTag(options);
-        this.loaded = true;
-        console.log(this.tag);
+        if (window.ATInternet) {
+          this.tag = this.newTag(options);
+          this.loaded = true;
+          console.log(this.tag);
+        } else {
+          this.fail = true;
+        }
       });
     }
   }
@@ -36,20 +40,24 @@ export default class SmarttagPlugin {
    * @param info: {name: string, level2?: string, chapter1?: string, chapter2?: string, chapter3?: string, customObject?: any}
    */
   sendPage(info) {
-    let time = setInterval(() => {
-      if (this.loaded) {
-        this.tag.page.set(info);
-        this.tag.dispatch();
-        clearInterval(time);
-      }
-    }, 100);
+    if (!this.fail) {
+      let time = setInterval(() => {
+        if (this.loaded) {
+          this.tag.page.set(info);
+          this.tag.dispatch();
+          clearInterval(time);
+        }
+      }, 100);
+    }
   }
 
   /**
    * @param info: {elem: any, name: string, level2?: string, chapter1?: string, chapter2?: string, chapter3?: string, type: string, customObject?: any}
    */
   sendClick(info) {
-    this.tag.click.send(info);
+    if (!this.fail) {
+      this.tag.click.send(info);
+    }
   }
 
   /**
