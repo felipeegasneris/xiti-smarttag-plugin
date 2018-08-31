@@ -2,6 +2,7 @@
 export default class SmarttagPlugin {
   loaded = false;
   fail = false;
+
   /**
    * @param xtsite
    * @param options
@@ -40,7 +41,7 @@ export default class SmarttagPlugin {
    * @param info: {name: string, level2?: string, chapter1?: string, chapter2?: string, chapter3?: string, customObject?: any}
    */
   sendPage(info) {
-    if (!this.fail) {
+    try {
       let time = setInterval(() => {
         if (this.loaded) {
           this.tag.page.set(info);
@@ -48,6 +49,8 @@ export default class SmarttagPlugin {
           clearInterval(time);
         }
       }, 100);
+    } catch (e) {
+      console.error('plugin not loaded');
     }
   }
 
@@ -55,8 +58,10 @@ export default class SmarttagPlugin {
    * @param info: {elem: any, name: string, level2?: string, chapter1?: string, chapter2?: string, chapter3?: string, type: string, customObject?: any}
    */
   sendClick(info) {
-    if (!this.fail) {
+    try {
       this.tag.click.send(info);
+    } catch (e) {
+      console.error('plugin not loaded');
     }
   }
 
